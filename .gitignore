@@ -1,0 +1,13 @@
+# キャプチャ画像とPDFを除外
+screenshots/
+*.pdf
+*.jpg
+*.png
+
+# Pythonのキャッシュなど
+__pycache__/
+*.pyc
+
+# ビルド関連
+build/
+dist/
