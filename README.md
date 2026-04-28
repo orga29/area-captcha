@@ -12,6 +12,9 @@
 python areacap4kind1529.py
 ```
 
+## 補足
+PDF作成に成功すると、中間生成物のJPEGファイル（`screenshots/page_*.jpg`）は自動削除され、`screenshots/output.pdf` のみが残ります。
+
 ## 依存ライブラリ
 以下のライブラリが必要です：
 - `pyautogui`
