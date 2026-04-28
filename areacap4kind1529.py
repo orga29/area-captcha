@@ -268,17 +268,33 @@ class RegionSelector:
 class PDFConverter:
     @staticmethod
     def images_to_pdf(image_files, output_pdf_path):
-        if not image_files: return
+        if not image_files:
+            return False
         print(f"PDF作成中... ({len(image_files)}枚)")
-        images = [Image.open(img_file) for img_file in image_files]
+        images = []
+        for img_file in image_files:
+            with Image.open(img_file) as img:
+                images.append(img.convert("RGB"))
         try:
             images[0].save(output_pdf_path, save_all=True, append_images=images[1:], dpi=(150, 150))
             print(f"成功: {output_pdf_path}")
+            return True
         except PermissionError:
             timestamp = time.strftime("%Y%m%d_%H%M%S")
             new_path = output_pdf_path.replace(".pdf", f"_{timestamp}.pdf")
             print(f"別名保存: {new_path}")
             images[0].save(new_path, save_all=True, append_images=images[1:], dpi=(150, 150))
+            return True
+        finally:
+            for image in images:
+                image.close()
+
+def cleanup_temp_images(image_files):
+    for image_file in image_files:
+        try:
+            os.unlink(image_file)
+        except Exception as e:
+            print(f">> 一時画像の削除に失敗: {image_file} ({e})")
 
 def check_for_stop_key():
     while not stop_event.is_set():
@@ -301,7 +317,9 @@ def main():
     image_files = capture.window_capture(gui_root)
 
     output_pdf_path = os.path.join(capture.output_folder, 'output.pdf')
-    pdf_converter.images_to_pdf(image_files, output_pdf_path)
+    pdf_created = pdf_converter.images_to_pdf(image_files, output_pdf_path)
+    if pdf_created:
+        cleanup_temp_images(image_files)
 
     os.startfile(capture.output_folder)
     stop_event.set()
