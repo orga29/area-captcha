@@ -11,3 +11,9 @@ __pycache__/
 # ビルド関連
 build/
 dist/
+
+# Code-signing credentials must never be committed.
+*.pfx
+*.p12
+*.pvk
+*.key
